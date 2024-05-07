@@ -1,0 +1,20 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+    --primary-background-color: hsl(0,0%,5%);
+    --primary-text-color: hsl(0,0%,88%);
+}
+
+.text-primary {
+    @apply text-[var(--primary-text-color)];
+}
+
+.bg-primary {
+    @apply bg-[var(--primary-background-color)];
+}
+
+body {
+    @apply bg-primary text-primary;
+}
