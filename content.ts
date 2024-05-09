@@ -7,28 +7,25 @@ export const config: PlasmoCSConfig = {
 
 const storage = new Storage()
 
-console.log("AH1")
-
 storage.watch({
   "hideYoutubeSidebar": (c) => {
     removeSidebar(c.newValue)
   },
   "hideYoutubeStats": (c) => {
     removeStats(c.newValue)
+  },
+  "wordsAndWeightsDict": (c) => {
+    markVideos(c.newValue)
   }
 })
 
-console.log("AH2")
-
 const removeSidebar = (hideSidebar: boolean) => {
-  const elements = document.getElementsByClassName("ytd-watch-next-secondary-results-renderer") as HTMLCollectionOf<HTMLElement>
+  const element = document.getElementById("secondary")
 
-  if (!elements || elements.length === 0) {
+  if (!element) {
     console.log("Element not found")
   } else {
-    for (let i = 0; i < elements.length; i++) {
-      elements[i].style.opacity = hideSidebar ? "0" : "100"
-    }
+    element.style.opacity = hideSidebar ? "0" : "100"
   }
 }
 
@@ -45,7 +42,13 @@ const removeStats = (hideStats: boolean) => {
 }
 
 const markVideos = (wordsAndWeightsDict: any) => {
-  const videos = [...document.querySelectorAll("#content.style-scope.ytd-rich-item-renderer"), ...document.querySelectorAll(".style-scope.ytd-compact-video-renderer")] as HTMLCollectionOf<HTMLElement>
+  const videos = [
+    ...document.querySelectorAll("#content.style-scope.ytd-rich-item-renderer"),
+    ...document.querySelectorAll(".style-scope.ytd-compact-video-renderer"),
+    ...document.querySelectorAll("#dismissible.style-scope.ytd-video-renderer"),
+    ...document.querySelectorAll(".style-scope.yt-horizontal-list-renderer"),
+    ...document.querySelectorAll(".style-scope.ytd-item-section-renderer"),
+  ] as HTMLCollectionOf<HTMLElement>
 
   for (let i = 0; i < videos.length; i++) {
     const video = videos[i]
@@ -77,19 +80,16 @@ const markVideos = (wordsAndWeightsDict: any) => {
       //if sentiment greater than or equal to 0, grey out the video element
       if (sentiment < 0) {
         if (thumbnail) {
-          thumbnail.style.filter = "brightness(0.3)"
+          thumbnail.style.filter = "brightness(0.1)"
         }
         videoTitle.style.color = "red"
       } else if (sentiment == 0) {
         if (thumbnail) {
-          thumbnail.style.filter = "brightness(0.6)"
+          thumbnail.style.filter = "brightness(0.3)"
+          // thumbnail.style.visibility = "hidden"
         }
         videoTitle.style.color = "grey"
       }
-
-
-      console.log(title, sentiment)
-
     }
   }
 }
@@ -118,7 +118,10 @@ const asyncFunction = async () => {
     })
   }));
 
-  observer.observe(document, {childList: true, subtree: true})
+  observer.observe(document, {
+    childList: true,
+    subtree: true,
+  })
 }
 
 asyncFunction()

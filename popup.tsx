@@ -2,6 +2,7 @@ import { useState, useEffect } from "react"
 import { sendToBackground } from "@plasmohq/messaging"
 import "./style.css"
 import { useStorage } from "@plasmohq/storage/hook"
+import Toggle from "./components/toggle"
 
 // process.env.ANTHROPIC_TOKEN
 
@@ -24,7 +25,6 @@ function IndexPopup() {
     })
 
     console.log({resp})
-    console.log(resp.hydratedPrompt)
 
     if (resp.response.content.length !== 0) {
       const firstResponse = resp.response.content[0]
@@ -41,19 +41,14 @@ function IndexPopup() {
       </div>
       <div className="mb-4 flex gap-3 flex-col">
         {/* Toggle switch hiding youtube sidebar */}
-        <label className="inline-flex items-center cursor-pointer">
-          <input type="checkbox" checked={hideYoutubeSidebar} onChange={(event => setHideYoutubeSidebar(event.target.checked))} className="sr-only peer"></input>
-            <div className="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600">
-            </div>
-            <span className="ms-3 text-sm font-medium">Hide Youtube Sidebar</span>
-        </label>
+        <Toggle title="Hide Video Statistics" checked={hideYoutubeStats} changeValue={setHideYoutubeStats} />
         {/* Toggle switch hiding youtube video statistics and comments */}
-        <label className="inline-flex items-center cursor-pointer">
-          <input type="checkbox" checked={hideYoutubeStats} onChange={(event => setHideYoutubeStats(event.target.checked))} className="sr-only peer"></input>
-            <div className="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600">
-            </div>
-          <span className="ms-3 text-sm font-medium">Hide Video Statistics</span>
-        </label>
+        {/*<label className="inline-flex items-center cursor-pointer">*/}
+        {/*  <input type="checkbox" checked={hideYoutubeStats} onChange={(event => setHideYoutubeStats(event.target.checked))} className="sr-only peer"></input>*/}
+        {/*    <div className="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600">*/}
+        {/*    </div>*/}
+        {/*  <span className="ms-3 text-sm font-medium">Hide Video Statistics</span>*/}
+        {/*</label>*/}
       </div>
 
       <textarea
