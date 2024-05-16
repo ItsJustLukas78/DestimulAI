@@ -9,28 +9,28 @@ import Toggle from "./components/toggle"
 function IndexPopup() {
 
   const [hideYoutubeSidebar, setHideYoutubeSidebar] = useStorage("hideYoutubeSidebar", (v) => v === undefined ? false: v)
-  const [hideYoutubeStats, setHideYoutubeStats] = useStorage("hideYoutubeStats", (v) => v === undefined ? false : v)
 
   const [wordsAndWeightsDict, setWordsAndWeightsDict] = useStorage("wordsAndWeightsDict", (v) => v === undefined ? {} : v)
 
-  const [input, setInput] = useState("I want to see videos about computer science, but I particularly don't want to see videos about python")
+  // const [input, setInput] = useState("I want to see videos about computer science, but I particularly don't want to see videos about python")
+  const [sentimentInput, setSentimentInput] = useStorage("sentimentInput", (v) => v === undefined ? "" : v)
+
+  const [hideYoutubeThumbnail, setHideYoutubeThumbnail] = useStorage("hideYoutubeThumbnail", (v) => v === undefined ? false: v)
+  const [hideYoutubeViews, setHideYoutubeViews] = useStorage("hideYoutubeViews", (v) => v === undefined ? false: v)
+  const [hideYoutubeSubscribers, setHideYoutubeSubscribers] = useStorage("hideYoutubeSubscribers", (v) => v === undefined ? false: v)
+  const [hideYoutubeShorts, setHideYoutubeShorts] = useStorage("hideYoutubeShorts", (v) => v === undefined ? false: v)
+  const [hideYoutubeComments, setHideYoutubeComments] = useStorage("hideYoutubeComments", (v) => v === undefined ? false: v)
+
 
   const makeAnthropicRequest = async (input: string) => {
-    console.log("Making request")
     const resp = await sendToBackground({
-      name: "anthropic",
+      name: "sentimentGenerator",
       body: {
         input: input
       }
     })
 
-    console.log({resp})
-
-    if (resp.response.content.length !== 0) {
-      const firstResponse = resp.response.content[0]
-      console.log(firstResponse)
-      setWordsAndWeightsDict(JSON.parse(firstResponse.text))
-    }
+    console.log(resp)
   }
 
   return (
@@ -39,30 +39,58 @@ function IndexPopup() {
         <h1 className="text-2xl font-bold">DestimulAI</h1>
         <p className="text-lg">Intelligently Block Stimulating Content</p>
       </div>
-      <div className="mb-4 flex gap-3 flex-col">
-        {/* Toggle switch hiding youtube sidebar */}
-        <Toggle title="Hide Video Statistics" checked={hideYoutubeStats} changeValue={setHideYoutubeStats} />
-        {/* Toggle switch hiding youtube video statistics and comments */}
-        {/*<label className="inline-flex items-center cursor-pointer">*/}
-        {/*  <input type="checkbox" checked={hideYoutubeStats} onChange={(event => setHideYoutubeStats(event.target.checked))} className="sr-only peer"></input>*/}
-        {/*    <div className="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600">*/}
-        {/*    </div>*/}
-        {/*  <span className="ms-3 text-sm font-medium">Hide Video Statistics</span>*/}
-        {/*</label>*/}
+      <hr className="mb-2 opacity-20" />
+      <div className="p-2 rounded-md mb-2 flex flex-col gap-1">
+        <h2 className="text-md font-extrabold">Toggle to hide stimulating content:</h2>
+        <p className="text-xs text-gray-500">These settings will be saved and applied on youtube</p>
       </div>
+      <div className="mb-5 flex gap-3 flex-row bg-neutral-800 p-3 rounded-md">
+        <div className="flex gap-3 flex-col">
+          <Toggle title="Sidebar" checked={hideYoutubeSidebar} changeValue={setHideYoutubeSidebar} />
+          <Toggle title="Thumbnails" checked={hideYoutubeThumbnail} changeValue={setHideYoutubeThumbnail} />
+          <Toggle title="Views" checked={hideYoutubeViews} changeValue={setHideYoutubeViews} />
+          <Toggle title="Subscriber Counts" checked={hideYoutubeSubscribers} changeValue={setHideYoutubeSubscribers} />
+          <Toggle title="Shorts" checked={hideYoutubeShorts} changeValue={setHideYoutubeShorts} />
+        </div>
+        <div className="flex gap-3 flex-col">
+          <Toggle title="Comments" checked={hideYoutubeComments} changeValue={setHideYoutubeComments} />
 
+
+        </div>
+      </div>
+      <hr className="mb-2 opacity-20" />
+      <div className="p-2 rounded-md mb-2 flex flex-col gap-1">
+        <h2 className="text-md font-extrabold">Describe what content you want to see:</h2>
+        <p className="text-xs text-gray-500">Weighted words will generated to be used for video topic matching</p>
+      </div>
       <textarea
-        className="w-full h-[100px] mb-4 rounded-md bg-neutral-800 p-2"
-        placeholder="Enter your input here..."
-        value={input}
-        onChange={(event) => setInput(event.target.value)}
+        className="w-full h-[100px] mb-2 rounded-md bg-neutral-800 px-4 py-2"
+        placeholder="I want to see videos about U.S. history and want to avoid videos about video games."
+        value={sentimentInput}
+        onChange={(event) => setSentimentInput(event.target.value)}
       ></textarea>
-
       <button
-        className="px-4 py-2 mb-4 text-white bg-blue-500 rounded-md"
-        onClick={() => makeAnthropicRequest(input)}
+        className="w-full px-4 py-2 mb-5 text-white bg-blue-500 rounded-md"
+        onClick={() => makeAnthropicRequest(sentimentInput)}
       >
-        Submit
+        Prompt AI
+      </button>
+      <hr className="mb-2 opacity-20" />
+      <div className="p-2 rounded-md mb-2 flex flex-col gap-1">
+        <h2 className="text-md font-extrabold">What do you hope to achieve on youtube?:</h2>
+        <p className="text-xs text-gray-500">AI will analyze video transcripts to make sure these goals are being met, and will warn you otherwise</p>
+      </div>
+      <textarea
+        className="w-full h-[100px] mb-2 rounded-md bg-neutral-800 px-4 py-2"
+        placeholder="I want to study for my U.S. history exam and want to avoid distractions."
+        value={sentimentInput}
+        onChange={(event) => setSentimentInput(event.target.value)}
+      ></textarea>
+      <button
+        className="w-full px-4 py-2 mb-4 text-white bg-blue-500 rounded-md"
+        onClick={() => makeAnthropicRequest(sentimentInput)}
+      >
+        Prompt AI
       </button>
 
       {/* display the words and weights dictionary in a scrollable div */}
