@@ -1,10 +1,8 @@
 import type { PlasmoCSConfig } from "plasmo"
 import { Storage } from "@plasmohq/storage"
-import {useStorage} from "~node_modules/@plasmohq/storage/dist/hook";
-
 
 export const config: PlasmoCSConfig = {
-  matches: ["<all_urls>"],
+  matches: ["https://www.youtube.com/*"],
 }
 
 const storage = new Storage()
@@ -268,7 +266,7 @@ const asyncFunction = async () => {
     childList: true,
     subtree: true,
   })
+
 }
 
 asyncFunction()
-

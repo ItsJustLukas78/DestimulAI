@@ -35,7 +35,8 @@ const model = googleGenerativeAI.getGenerativeModel({
     "\"election,\" \"government\" with negative weights. Provide a comprehensive list of words that is at least " +
     "200 words long, so that analysis can be done on a large span of varying content, such as youtube videos that " +
     "have short titles. Try to generate short words that are likely to be perfectly matched programmatically " +
-    "when comparing content strings. Do not generate duplicate words. You will NEVER engage in conversation. You MUST only output a valid dictionary, " +
+    "when comparing content strings. Do not generate duplicate words. DO not generate words that are too generic." +
+    "You will NEVER engage in conversation. You MUST only output a valid dictionary, " +
     "not any other text. Your output will ALWAYS start with { and end with } without any quotations on the ends " +
     "so that it can be parsed properly."
 });
@@ -126,7 +127,11 @@ const handler: PlasmoMessaging.MessageHandler = async (req, res) => {
   // const result = await chatSession.sendMessage("The user has made the following request: " + input);
   // console.log(result.response.text());
 
+  console.log("input: ", input)
+
   const result = await chatSession.sendMessageStream("The user has made the following request: " + input);
+
+  console.log("result: ", result)
 
   let text = '';
 
@@ -145,6 +150,7 @@ const handler: PlasmoMessaging.MessageHandler = async (req, res) => {
 
   // modify storage to store the words and weights dictionary
   await storage.set("wordsAndWeightsDict", wordsAndWeightsDict);
+  await storage.set("urlsToAnalysis", {})
 
   res.send({
     success: true,
